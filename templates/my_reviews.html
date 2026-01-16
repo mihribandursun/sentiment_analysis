@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Yorumlarım</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<a href="{{ url_for('dashboard') }}" class="back-btn">⬅ Ana Sayfaya Dön</a>
+
+<h1>📝 Yorumlarım</h1>
+
+{% if total_reviews == 0 %}
+    <p>0 yorum yaptınız.</p>
+{% else %}
+<div class="reviews">
+    {% for r in reviews %}
+    <div class="review-card {% if r.sentiment == 1 %}positive-border{% else %}negative-border{% endif %}">
+        <div class="review-header">
+            <a href="{{ url_for('restaurant_detail', vendor_id=r.vendor_id) }}"><strong>{{ r.restaurant_name }}</strong></a>
+            <span class="date">{{ r.created_at.strftime('%d.%m.%Y') }}</span>
+
+            <!-- Silme butonu -->
+            <form method="POST" style="display:inline-block; margin-left:10px;">
+                <input type="hidden" name="delete_review_id" value="{{ r.id }}">
+                <button type="submit" class="delete-btn">🗑️</button>
+            </form>
+        </div>
+        <p class="review-text">{{ r.review_text }}</p>
+        <div class="review-footer">
+            <div class="sentiment-badge {{ 'positive' if r.sentiment == 1 else 'negative' }}">
+                {{ '🟢 Pozitif' if r.sentiment == 1 else '🔴 Negatif' }}
+                {% if r.confidence %}
+                    <span class="confidence">(%{{ r.confidence | round(0) }} güven)</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    {% if page > 1 %}
+        <a href="?page={{ page - 1 }}">⬅ Önceki</a>
+    {% endif %}
+    <span>Sayfa {{ page }} / {{ total_pages }}</span>
+    {% if page < total_pages %}
+        <a href="?page={{ page + 1 }}">Sonraki ➡</a>
+    {% endif %}
+</div>
+{% endif %}
+
+</body>
+</html>

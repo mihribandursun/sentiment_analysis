@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ restaurant.restaurant_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .review-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: red;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+        .delete-btn:hover {
+            color: darkred;
+        }
+    </style>
+</head>
+<body>
+
+<a href="/" class="back-btn">⬅ Geri</a>
+
+<div class="detail-container">
+
+    {% if restaurant.img %}
+        <img src="{{ restaurant.img }}" class="detail-img">
+    {% endif %}
+
+    <h1>{{ restaurant.restaurant_name }}</h1>
+    <p>{{ restaurant.district }}</p>
+
+    <div class="info">
+        <span>⭐ {{ restaurant.avg_rating | round(1) }}</span>
+        <span>🍽 {{ restaurant.cuisine_type }}</span>
+        <span>🚚 {{ restaurant.delivery_time }}</span>
+        <span>💰 {{ restaurant.price_range }}</span>
+        <span>📝 {{ restaurant.total_reviews }} yorum</span>
+    </div>
+
+    <div class="sentiment detail-sentiment">
+        <span class="positive">🟢 {{ restaurant.positive_pct }}%</span>
+        <span class="negative">🔴 {{ restaurant.negative_pct }}%</span>
+    </div>
+
+</div>
+
+<hr>
+
+<h2>✏️ Yorum Yaz</h2>
+<form method="post" class="review-form">
+    <textarea name="review_text" placeholder="Yorumunuzu yazın..." required></textarea>
+    <button type="submit">Gönder</button>
+</form>
+
+<hr>
+
+<h2>💬 Kullanıcı Yorumları</h2>
+
+<div class="reviews">
+    {% for r in user_reviews %}
+    <div class="review-card {% if r.sentiment == 1 %}positive-border{% else %}negative-border{% endif %}">
+        <div class="review-header">
+            <strong>{{ r.username }}</strong>
+            <span class="date">{{ r.created_at.strftime('%d.%m.%Y') }}</span>
+
+            {% if session['user_id'] == r.user_id %}
+            <form method="POST" action="{{ url_for('restaurant_detail', vendor_id=restaurant.vendor_id) }}" style="display:inline-block; margin-left:auto;">
+                <input type="hidden" name="delete_review_id" value="{{ r.id }}">
+                <button type="submit" class="delete-btn">🗑️</button>
+            </form>
+            {% endif %}
+        </div>
+        <p class="review-text">{{ r.review_text }}</p>
+        <div class="review-footer">
+            <div class="sentiment-badge {{ 'positive' if r.sentiment == 1 else 'negative' }}">
+                {{ '🟢 Pozitif' if r.sentiment == 1 else '🔴 Negatif' }}
+                <span class="confidence">(%{{ r.confidence }} güven)</span>
+            </div>
+        </div>
+
+    </div>
+    {% endfor %}
+
+    {% for r in reviews %}
+    <div class="review-card {% if r.sentiment == 1 %}positive-border{% else %}negative-border{% endif %}">
+        <div class="review-header">
+            <strong>{{ r.reviewer_name }}</strong>
+            <span class="date">{{ r.created_at.strftime('%d.%m.%Y') }}</span>
+        </div>
+        <p class="review-text">{{ r.review_text }}</p>
+        <div class="review-footer">
+            <div class="sentiment-badge {{ 'positive' if r.sentiment == 1 else 'negative' }}">
+                {{ '🟢 Pozitif' if r.sentiment == 1 else '🔴 Negatif' }}
+            </div>
+        </div>
+
+    </div>
+    {% endfor %}
+</div>
+
+<hr>
+
+<div class="pagination">
+    {% if page > 1 %}
+        <a href="?page={{ page - 1 }}">⬅ Önceki</a>
+    {% endif %}
+    <span>Sayfa {{ page }} / {{ total_pages }}</span>
+    {% if page < total_pages %}
+        <a href="?page={{ page + 1 }}">Sonraki ➡</a>
+    {% endif %}
+</div>
+
+</body>
+</html>

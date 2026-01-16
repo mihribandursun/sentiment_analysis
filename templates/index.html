@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Restaurant Sentiment Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Bootstrap CSS added -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<h1>🍽️ Restoran Duygu Analizi</h1>
+
+<form method="get" class="search-bar">
+    <input
+        type="text"
+        name="q"
+        placeholder="🔍 Restoran ara..."
+        value="{{ search }}"
+    >
+
+    <input type="hidden" name="filter" value="{{ filter_type }}">
+    {% if selected_district %}
+        <input type="hidden" name="district" value="{{ selected_district }}">
+    {% endif %}
+
+    <button type="submit">Ara</button>
+</form>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid w-100 d-flex">
+    <a class="navbar-brand" href="{{ url_for('dashboard') }}">Ana Sayfa</a>
+
+    <!-- Sağ üst kullanıcı alanı -->
+    <div class="ms-auto d-flex align-items-center">
+      {% if session.get('username') %}
+        <span class="me-3">Hoşgeldin, {{ session['username'] }}</span>
+        <a href="{{ url_for('my_reviews') }}" class="btn btn-outline-secondary btn-sm me-2">Yorumlarım</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Çıkış Yap</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-sm">Giriş</a>
+        <a href="{{ url_for('register') }}" class="btn btn-outline-success btn-sm ms-2">Kayıt Ol</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<div class="filters">
+    <form method="get">
+        <select name="district" onchange="this.form.submit()">
+            <option value="">📍 Tüm Semtler</option>
+            {% for d in districts %}
+                <option value="{{ d }}" {% if d == selected_district %}selected{% endif %}>
+                    {{ d }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="cuisine" onchange="this.form.submit()">
+            <option value="">🍽️ Tüm Kategoriler</option>
+            {% for c in cuisines %}
+                <option value="{{ c }}" {% if c == selected_cuisine %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="filter" onchange="this.form.submit()">
+            <option value="popular" {% if filter_type == "popular" %}selected{% endif %}>🔥 En Çok Yorum</option>
+            <option value="positive" {% if filter_type == "positive" %}selected{% endif %}>🟢 En Beğenilen</option>
+            <option value="negative" {% if filter_type == "negative" %}selected{% endif %}>🔴 En Az Beğenilen</option>
+            <option value="rating" {% if filter_type == "rating" %}selected{% endif %}>⭐ En Yüksek Puan</option>
+        </select>
+
+        
+    </form>
+</div>
+
+<hr>
+
+<div class="grid">
+    {% for r in restaurants %}
+    <a href="{{ url_for('restaurant_detail', vendor_id=r.vendor_id) }}" class="card-link">
+        <div class="card
+            {% if r.positive_pct > r.negative_pct %}
+                positive-border
+            {% else %}
+                negative-border
+            {% endif %}
+        ">
+            {% if r.img and 'placeholder' not in r.img %}
+                <img src="{{ r.img }}">
+            {% else %}
+                <div class="no-image">Resim Yok</div>
+            {% endif %}
+
+            <h3>{{ r.restaurant_name }}</h3>
+            <p class="district">{{ r.district }}</p>
+            <p class="cuisine">{{ r.cuisine_type }}</p>
+            <p class="rating">⭐ {{ r.avg_rating | round(1) }}</p>
+
+            <div class="sentiment">
+                <span class="positive">🟢 {{ r.positive_pct }}%</span>
+                <span class="negative">🔴 {{ r.negative_pct }}%</span>
+            </div>
+        </div>
+    </a>
+{% endfor %}
+
+<div class="pagination-wrapper">
+    {% if page > 1 %}
+        <a class="page-btn"
+           href="{{ url_for('dashboard') }}?page={{ page - 1 }}&filter={{ filter_type }}&district={{ selected_district or '' }}&q={{ search }}">
+            ⬅ Önceki
+        </a>
+    {% endif %}
+
+    <span class="page-info">
+        Sayfa {{ page }} / {{ total_pages }}
+    </span>
+
+    {% if page < total_pages %}
+        <a class="page-btn"
+           href="{{ url_for('dashboard') }}?page={{ page + 1 }}&filter={{ filter_type }}&district={{ selected_district or '' }}&q={{ search }}">
+            Sonraki ➡
+        </a>
+    {% endif %}
+</div>
+
+</body>
+</html>
