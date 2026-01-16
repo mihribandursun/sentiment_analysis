@@ -1,0 +1,32 @@
+1057 - Balık ve Deniz Ürünleri
+1058 - Burger
+1059 - Çağ Kebap
+1061 - Çiğ Köfte
+1063 - Dondurma
+1064 - Döner
+1065 - Dünya Mutfağı
+1067 - Ev Yemekleri
+1069 - Kahvaltı & Börek
+1070 - Kahve
+1071 - Kebap & Türk Mutfağı
+1073 - Köfte
+1072 - Kokoreç
+1074 - Kumpir
+1075 - Kumru
+1104 - Makarna
+1077 - Mantı
+1078 - Meze
+1079 - Pastane & Fırın
+1080 - Pide & Lahmacun
+1081 - Pilav
+1082 - Pizza
+1076 - Salata
+1083 - Söğüş
+1084 - Steak
+1085 - Tantuni
+1086 - Tatlı
+1087 - Tavuk
+1088 - Tost & Sandviç
+1089 - Uzak Doğu
+1105 - Vejetaryen & Vegan
+1090 - Waffle

@@ -1,0 +1,17 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Veritabanı ve Şifreler
+.env
+*.db
+
+# Büyük Dosyalar (GitHub 100MB üzerine izin vermez)
+models/best_bert_model/
+data/raw/
+data/processed/
+data/final/*.csv
+
+# Mac sistem dosyaları
+.DS_Store
